@@ -1,7 +1,7 @@
-// Número de WhatsApp da Bárbara (substituir pelo número real).
-export const WHATSAPP_NUMBER = "5511999999999"
+// Número de WhatsApp da Bárbara.
+export const WHATSAPP_NUMBER = "5511991102926"
 
-const DEFAULT_MESSAGE = "Olá, Bárbara! Vim pelo site e gostaria de saber mais!"
+const DEFAULT_MESSAGE = "Olá Bárbara, vim do site e gostaria de mais informações."
 
 export function whatsappLink(message: string = DEFAULT_MESSAGE) {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`

@@ -5,9 +5,9 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-heading: var(--font-cormorant), 'Georgia', serif;
-  --font-serif: var(--font-cormorant), 'Georgia', serif;
-  --font-sans: var(--font-montserrat), 'Geist Fallback', sans-serif;
+  --font-heading: var(--font-fraunces), 'Georgia', serif;
+  --font-serif: var(--font-fraunces), 'Georgia', serif;
+  --font-sans: var(--font-manrope), 'Geist Fallback', sans-serif;
   --font-mono: var(--font-geist-mono), 'Geist Mono Fallback';
   --color-gold: var(--gold);
   --color-gold-foreground: var(--gold-foreground);

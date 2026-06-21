@@ -39,7 +39,11 @@ export function Hero() {
   }
 
   return (
-    <section ref={sectionRef} id="topo" className="relative h-[100svh] min-h-[640px] w-full overflow-hidden">
+    <section
+      ref={sectionRef}
+      id="topo"
+      className="relative flex min-h-[100svh] w-full overflow-hidden bg-[#2c1f22]"
+    >
       {/* Imagem de fundo em tela cheia */}
       <motion.div style={{ scale: imageScale }} className="absolute inset-0 will-change-transform">
         <Image
@@ -66,8 +70,8 @@ export function Hero() {
 
       {/* Conteúdo sobreposto */}
       <motion.div
-        style={{ y: overlayY, opacity: overlayOpacity }}
-        className="relative z-10 flex h-full flex-col justify-end pb-20 md:pb-24"
+        style={{ y: overlayY }}
+        className="relative z-10 flex w-full flex-1 flex-col justify-end pb-20 pt-28 md:pb-24"
       >
         <motion.div
           initial="hidden"
@@ -141,7 +145,7 @@ export function Hero() {
           transition={{ duration: 1.8, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
           className="flex flex-col items-center gap-2 text-[#f3e7e6]/70"
         >
-          <span className="text-[10px] uppercase tracking-[0.3em]">Role</span>
+          <span className="text-[10px] uppercase tracking-[0.3em]">Rolar</span>
           <ArrowDown className="h-4 w-4" />
         </motion.div>
       </motion.div>

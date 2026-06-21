@@ -1,21 +1,23 @@
+import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import { Cormorant_Garamond, Montserrat, Geist_Mono } from 'next/font/google'
+import { Fraunces, Manrope, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
 import { WhatsappFloat } from '@/components/whatsapp-float'
 
-const cormorant = Cormorant_Garamond({
-  variable: '--font-cormorant',
+const fraunces = Fraunces({
+  variable: '--font-fraunces',
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
+  style: ['normal', 'italic'],
   display: 'swap',
 })
 
-const montserrat = Montserrat({
-  variable: '--font-montserrat',
+const manrope = Manrope({
+  variable: '--font-manrope',
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600'],
+  weight: ['300', '400', '500', '600', '700'],
   display: 'swap',
 })
 
@@ -59,13 +61,14 @@ export default function RootLayout({
   return (
     <html
       lang="pt-BR"
-      className={`${cormorant.variable} ${montserrat.variable} ${geistMono.variable} bg-background`}
+      className={`${fraunces.variable} ${manrope.variable} ${geistMono.variable} bg-background`}
     >
       <body className="bg-background font-sans antialiased">
         <SiteHeader />
         <main>{children}</main>
         <SiteFooter />
         <WhatsappFloat />
+        {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
   )

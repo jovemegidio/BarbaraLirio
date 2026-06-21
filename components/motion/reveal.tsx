@@ -1,22 +1,14 @@
 "use client"
 
-import { motion, useReducedMotion, type Variants } from "motion/react"
-import { type ReactNode, useEffect, useState } from "react"
+import { motion, useInView, useReducedMotion, type Variants } from "motion/react"
+import { useEffect, useRef, useState, type ReactNode } from "react"
 
 const EASE = [0.16, 1, 0.3, 1] as const
-// Failsafe: se o IntersectionObserver não disparar a animação por qualquer
-// motivo, o conteúdo aparece de qualquer forma após esse tempo, em vez de
-// ficar invisível para sempre.
-const FAILSAFE_MS = 1200
 
-function useRevealFailsafe() {
-  const [forced, setForced] = useState(false)
-  useEffect(() => {
-    const id = setTimeout(() => setForced(true), FAILSAFE_MS)
-    return () => clearTimeout(id)
-  }, [])
-  return forced
-}
+// Fail-safe: se o IntersectionObserver não disparar (acontece dentro do
+// iframe do preview), revelamos o conteúdo mesmo assim após este tempo,
+// para que nada fique permanentemente invisível (em branco).
+const FAILSAFE_MS = 1100
 
 type Direction = "up" | "down" | "left" | "right" | "none"
 
@@ -33,6 +25,20 @@ function offset(direction: Direction, distance: number) {
     default:
       return {}
   }
+}
+
+/** Dispara quando o elemento entra na viewport, com fallback por timeout. */
+function useReveal(amount: number, once = true) {
+  const ref = useRef<HTMLElement | null>(null)
+  const inView = useInView(ref, { once, amount })
+  const [failsafe, setFailsafe] = useState(false)
+
+  useEffect(() => {
+    const t = setTimeout(() => setFailsafe(true), FAILSAFE_MS)
+    return () => clearTimeout(t)
+  }, [])
+
+  return { ref, show: inView || failsafe }
 }
 
 interface RevealProps {
@@ -55,30 +61,26 @@ export function Reveal({
   distance = 28,
   delay = 0,
   duration = 0.9,
-  blur = false,
+  blur = true,
   once = true,
-  amount = 0.1,
+  amount = 0.15,
   as = "div",
 }: RevealProps) {
   const reduce = useReducedMotion()
-  const forced = useRevealFailsafe()
   const MotionTag = motion[as]
+  const { ref, show } = useReveal(amount, once)
 
   if (reduce) {
     const Tag = as
     return <Tag className={className}>{children}</Tag>
   }
 
-  const visible = { opacity: 1, filter: "blur(0px)", x: 0, y: 0 }
-  const hidden = { opacity: 0, filter: blur ? "blur(10px)" : "blur(0px)", ...offset(direction, distance) }
-
   return (
     <MotionTag
+      ref={ref as never}
       className={className}
-      initial={hidden}
-      animate={forced ? visible : undefined}
-      whileInView={forced ? undefined : visible}
-      viewport={{ once, amount }}
+      initial={{ opacity: 0, filter: blur ? "blur(10px)" : "blur(0px)", ...offset(direction, distance) }}
+      animate={show ? { opacity: 1, filter: "blur(0px)", x: 0, y: 0 } : undefined}
       transition={{ duration, delay, ease: EASE }}
     >
       {children}
@@ -102,12 +104,12 @@ export function Stagger({
   delayChildren = 0.05,
   staggerChildren = 0.1,
   once = true,
-  amount = 0.1,
+  amount = 0.12,
   as = "div",
 }: StaggerProps) {
   const reduce = useReducedMotion()
-  const forced = useRevealFailsafe()
   const MotionTag = motion[as]
+  const { ref, show } = useReveal(amount, once)
 
   if (reduce) {
     const Tag = as
@@ -123,12 +125,11 @@ export function Stagger({
 
   return (
     <MotionTag
+      ref={ref as never}
       className={className}
       variants={container}
       initial="hidden"
-      animate={forced ? "show" : undefined}
-      whileInView={forced ? undefined : "show"}
-      viewport={{ once, amount }}
+      animate={show ? "show" : "hidden"}
     >
       {children}
     </MotionTag>
@@ -151,7 +152,7 @@ export function StaggerItem({
   direction = "up",
   distance = 26,
   duration = 0.8,
-  blur = false,
+  blur = true,
   as = "div",
 }: StaggerItemProps) {
   const reduce = useReducedMotion()
