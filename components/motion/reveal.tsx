@@ -55,7 +55,7 @@ export function Reveal({
   distance = 28,
   delay = 0,
   duration = 0.9,
-  blur = true,
+  blur = false,
   once = true,
   amount = 0.1,
   as = "div",
@@ -151,7 +151,7 @@ export function StaggerItem({
   direction = "up",
   distance = 26,
   duration = 0.8,
-  blur = true,
+  blur = false,
   as = "div",
 }: StaggerItemProps) {
   const reduce = useReducedMotion()
