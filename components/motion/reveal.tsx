@@ -41,6 +41,16 @@ function useReveal(amount: number, once = true) {
   return { ref, show: inView || failsafe }
 }
 
+// O conteúdo nasce visível (sem depender da animação ter montado). Só depois
+// que o React confirma ter montado no cliente é que trocamos para a versão
+// animada — assim, se a hidratação inicial falhar por qualquer motivo nunca
+// fica permanentemente invisível, só perde o efeito de entrada.
+function useMounted() {
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+  return mounted
+}
+
 interface RevealProps {
   children: ReactNode
   className?: string
@@ -67,10 +77,11 @@ export function Reveal({
   as = "div",
 }: RevealProps) {
   const reduce = useReducedMotion()
+  const mounted = useMounted()
   const MotionTag = motion[as]
   const { ref, show } = useReveal(amount, once)
 
-  if (reduce) {
+  if (reduce || !mounted) {
     const Tag = as
     return <Tag className={className}>{children}</Tag>
   }
@@ -108,10 +119,11 @@ export function Stagger({
   as = "div",
 }: StaggerProps) {
   const reduce = useReducedMotion()
+  const mounted = useMounted()
   const MotionTag = motion[as]
   const { ref, show } = useReveal(amount, once)
 
-  if (reduce) {
+  if (reduce || !mounted) {
     const Tag = as
     return <Tag className={className}>{children}</Tag>
   }
