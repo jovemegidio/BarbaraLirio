@@ -13,6 +13,7 @@ const services = [
     description:
       "Sessões em consultório acolhedor e reservado, pensado para que você se sinta seguro e à vontade durante todo o processo terapêutico.",
     image: "/images/consultorio-real.jpg",
+    imagePosition: "object-center",
     alt: "Consultório aconchegante com sofá cinza, poltrona caramelo e mesa de madeira",
     icon: MapPin,
     meta: "Tatuapé · São Paulo",
@@ -22,6 +23,7 @@ const services = [
     description:
       "Terapia por videochamada com o mesmo cuidado e qualidade do presencial, onde quer que você esteja. Flexibilidade e sigilo garantidos.",
     image: "/images/como-funciona.jpg",
+    imagePosition: "object-[center_18%]",
     alt: "Bárbara Lírio em atendimento online por videochamada",
     icon: Video,
     meta: "De onde você estiver",
@@ -54,7 +56,7 @@ export function Services() {
                 alt={service.alt}
                 fill
                 sizes="100vw"
-                className="object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-105"
+                className={`object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-105 ${service.imagePosition}`}
               />
               <div
                 aria-hidden
