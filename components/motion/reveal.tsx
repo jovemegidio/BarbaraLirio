@@ -1,9 +1,22 @@
 "use client"
 
 import { motion, useReducedMotion, type Variants } from "motion/react"
-import type { ReactNode } from "react"
+import { type ReactNode, useEffect, useState } from "react"
 
 const EASE = [0.16, 1, 0.3, 1] as const
+// Failsafe: se o IntersectionObserver não disparar a animação por qualquer
+// motivo, o conteúdo aparece de qualquer forma após esse tempo, em vez de
+// ficar invisível para sempre.
+const FAILSAFE_MS = 1200
+
+function useRevealFailsafe() {
+  const [forced, setForced] = useState(false)
+  useEffect(() => {
+    const id = setTimeout(() => setForced(true), FAILSAFE_MS)
+    return () => clearTimeout(id)
+  }, [])
+  return forced
+}
 
 type Direction = "up" | "down" | "left" | "right" | "none"
 
@@ -48,6 +61,7 @@ export function Reveal({
   as = "div",
 }: RevealProps) {
   const reduce = useReducedMotion()
+  const forced = useRevealFailsafe()
   const MotionTag = motion[as]
 
   if (reduce) {
@@ -55,11 +69,15 @@ export function Reveal({
     return <Tag className={className}>{children}</Tag>
   }
 
+  const visible = { opacity: 1, filter: "blur(0px)", x: 0, y: 0 }
+  const hidden = { opacity: 0, filter: blur ? "blur(10px)" : "blur(0px)", ...offset(direction, distance) }
+
   return (
     <MotionTag
       className={className}
-      initial={{ opacity: 0, filter: blur ? "blur(10px)" : "blur(0px)", ...offset(direction, distance) }}
-      whileInView={{ opacity: 1, filter: "blur(0px)", x: 0, y: 0 }}
+      initial={hidden}
+      animate={forced ? visible : undefined}
+      whileInView={forced ? undefined : visible}
       viewport={{ once, amount }}
       transition={{ duration, delay, ease: EASE }}
     >
@@ -88,6 +106,7 @@ export function Stagger({
   as = "div",
 }: StaggerProps) {
   const reduce = useReducedMotion()
+  const forced = useRevealFailsafe()
   const MotionTag = motion[as]
 
   if (reduce) {
@@ -107,7 +126,8 @@ export function Stagger({
       className={className}
       variants={container}
       initial="hidden"
-      whileInView="show"
+      animate={forced ? "show" : undefined}
+      whileInView={forced ? undefined : "show"}
       viewport={{ once, amount }}
     >
       {children}
